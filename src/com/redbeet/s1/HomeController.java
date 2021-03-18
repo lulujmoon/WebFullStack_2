@@ -29,30 +29,8 @@ public class HomeController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String contextPath = request.getContextPath();
-		String encoding = request.getCharacterEncoding();
-		String method = request.getMethod();
-		String pathInfo = request.getPathInfo();
-		String uri = request.getRequestURI();
-		StringBuffer url = request.getRequestURL();
-		String servletPath = request.getServletPath();
-		String name = request.getParameter("name");
-		
-		System.out.println("Contextpath: "+contextPath);
-		System.out.println("encoding : "+encoding);
-		System.out.println("method : "+method);
-		System.out.println("pathInfo : "+pathInfo);
-		System.out.println("uri : "+uri);
-		System.out.println("rul : "+url);
-		System.out.println("servletpath : "+servletPath);
-		
-		
-		
-		String id = request.getParameter("id");
-		String age = request.getParameter("age///");
-		System.out.println(id);
-		System.out.println(age);
-		RequestDispatcher view = request.getRequestDispatcher("./index.jsp");
+
+		RequestDispatcher view = request.getRequestDispatcher("./WEB-INF/index.jsp");
 		view.forward(request, response);
 	}
 

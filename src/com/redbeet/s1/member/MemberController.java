@@ -1,11 +1,15 @@
 package com.redbeet.s1.member;
 
 import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.redbeet.s1.util.ActionForward;
 
 /**
  * Servlet implementation class MemberController
@@ -13,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/MemberController")
 public class MemberController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	private MemberService memberService;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -21,34 +25,53 @@ public class MemberController extends HttpServlet {
         super();
         // TODO Auto-generated constructor stub
     }
+    
+    public void init() throws ServletException{
+    	memberService = new MemberService();
+    	MemberDAO memberDAO = new MemberDAO();
+    	memberService.setMemberDAO(memberDAO);
+    }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 		
-		String id = request.getParameter("id");
-		String pw = request.getParameter("pw");
-		System.out.println(id);
-		System.out.println(pw);
+		String uri = request.getRequestURI();
 		
-		MemberDAO memberDAO = new MemberDAO();
-		MemberDTO memberDTO = new MemberDTO();
-		memberDTO.setId(id);
-		memberDTO.setPw(pw);
-		try {
-			memberDTO = memberDAO.login(memberDTO);
-			if(memberDTO!=null) {
-				System.out.println(memberDTO.getName());
-			}else {
-				System.out.println("로그인 실패");
+		//substring
+		uri = uri.substring(uri.lastIndexOf('/'));
+		String path="";
+		ActionForward actionForward = null;
+		
+		if(uri.equals("/memberLogin.do")) {
+			try {
+				actionForward = memberService.memberLogin(request);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}else if(uri.equals("/memberJoin.do")) {
+		
+			try {
+				actionForward = memberService.memberJoin(request);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
+			System.out.println("그 외 다른 처리");
 		}
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		if(actionForward.isCheck()) {
+		//forward
+		RequestDispatcher view = request.getRequestDispatcher(actionForward.getPath());
+		view.forward(request, response);
+		}else {
+		//Redirect
+		response.sendRedirect(actionForward.getPath());
+		}
 	}
 
 	/**
